@@ -1,0 +1,11 @@
+{
+  "id": "{4B02618F-358B-4D5F-8018-52250CD05F11}",
+  "name": "BTPDevice",
+  "type": 3,
+  "vendor": "Bluetooth",
+  "aliases": [ "Presence Device" ],
+  "parentRequirements": [],
+  "childRequirements": [],
+  "implemented": [],
+  "prefix": "BTP"
+}

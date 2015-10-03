@@ -1,0 +1,9 @@
+{
+  "elements": [
+    { "name": "Mac", "type": "ValidationTextBox", "caption": "Mac" },
+    { "name": "ScanInterval", "type": "IntervalBox", "caption": "Sekunden" }
+  ],
+  "actions": [
+    { "type": "Button", "label": "Suchen", "onClick": "print_r(BTP_Scan($id));" }
+  ]
+}
