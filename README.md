@@ -4,7 +4,7 @@ SymconBTP ist eine Erweiterung für die Heimautomatisierung IP Symcon. Diese Erw
 
 ## Einrichtung
 
-Die Einrichtung erfolgt über Modulverwaltung von Symcon. Nach der Installation des Moduls sollte der Dienst neugestartet werden. Danach kann man pro Gerät eine  Instanz vom Typ "Presence Device" anlegen.
+Die Einrichtung erfolgt über Modulverwaltung von Symcon. Nach der Installation des Moduls sollte der Dienst neugestartet werden. Danach kann man pro Gerät eine Instanz vom Typ "Presence Device" anlegen.
 
 ## Einstellungen
 
@@ -15,9 +15,11 @@ Die Einrichtung erfolgt über Modulverwaltung von Symcon. Nach der Installation 
 
 * Linux
 * Bluez (hcitool)
+* Bluetooth Dongle
 * ab Symcon Version 4
 
 ## Funktionen
 
-	BTP_Scan($id); // Sucht nach dem Bluetoothdevice
+	// Sucht nach dem Bluetoothdevice
+	BTP_Scan($id);
 	
