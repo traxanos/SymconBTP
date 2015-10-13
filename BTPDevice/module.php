@@ -57,7 +57,7 @@ class BTPDevice extends IPSModule {
       $mac = $this->ReadPropertyString('Mac');
       if (preg_match('/^(?:[0-9A-F]{2}[:]?){6}$/i', $mac)) {
         $lastState = GetValueBoolean($this->GetIDForIdent('STATE'));
-        $search = trim(shell_exec("hcitool name $mac"));
+        $search = trim(shell_exec("sudo hcitool name $mac"));
         $state = ($search != '');
         SetValueBoolean($this->GetIDForIdent('STATE'), $state);
 
