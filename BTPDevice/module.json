@@ -3,7 +3,7 @@
   "name": "BTPDevice",
   "type": 3,
   "vendor": "Bluetooth",
-  "aliases": [ "Presence Device" ],
+  "aliases": [ "Bluetooth Presence Device" ],
   "parentRequirements": [],
   "childRequirements": [],
   "implemented": [],
