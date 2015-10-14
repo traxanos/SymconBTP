@@ -1,5 +1,6 @@
-<?
+<?php
 class BTPDevice extends IPSModule {
+
   public function Create() {
     parent::Create();
     $this->RegisterPropertyString('Mac', '');
@@ -52,6 +53,9 @@ class BTPDevice extends IPSModule {
     }
   }
 
+  /*
+   * Sucht nach dem Bluetoothdevice
+   */
   public function Scan() {
     if(IPS_SemaphoreEnter('BTPScan', 5000)) {
       $mac = $this->ReadPropertyString('Mac');
@@ -77,4 +81,3 @@ class BTPDevice extends IPSModule {
   }
 
 }
-?>
