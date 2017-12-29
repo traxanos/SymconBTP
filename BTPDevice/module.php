@@ -4,68 +4,65 @@ class BTPDevice extends IPSModule {
   public function Create() {
     parent::Create();
     $this->RegisterPropertyString('Mac', '');
-    $this->RegisterPropertyInteger('ScanInterval', 60);
+    $this->RegisterPropertyInteger('ScanInterval', 30);
+    $this->RegisterPropertyBoolean('BluetoothLE', false);
+
+    $this->RegisterTimer('Update', 0, 'BTP_Scan($_IPS[\'TARGET\'], 0);');
+
+    if($oldInterval = @$this->GetIDForIdent('INTERVAL')) IPS_DeleteEvent($oldInterval);
   }
 
   public function ApplyChanges() {
     parent::ApplyChanges();
 
-    $this->RegisterPropertyInteger('ScanInterval', 30);
     $stateId = $this->RegisterVariableBoolean('STATE', 'Zustand', '~Presence', 1);
     $presentId = $this->RegisterVariableInteger('PRESENT_SINCE', 'Anwesend seit', '~UnixTimestamp', 3);
     $absentId = $this->RegisterVariableInteger('ABSENT_SINCE', 'Abwesend seit', '~UnixTimestamp', 3);
-    $nameId = $this->RegisterVariableString('NAME', 'Name', '', 2);
+    if ($this->ReadPropertyBoolean('BluetoothLE')) {
+      if($nameId = @$this->GetIDForIdent('NAME')) IPS_DeleteVariable($nameId);
+    } else {
+      $nameId = $this->RegisterVariableString('NAME', 'Name', '', 2);
+    }
 
     IPS_SetIcon($this->GetIDForIdent('STATE'), 'Motion');
-    IPS_SetIcon($this->GetIDForIdent('NAME'), 'Keyboard');
+    if($nameId = @$this->GetIDForIdent('NAME')) IPS_SetIcon($nameId, 'Keyboard');
     IPS_SetIcon($this->GetIDForIdent('PRESENT_SINCE'), 'Clock');
     IPS_SetIcon($this->GetIDForIdent('ABSENT_SINCE'), 'Clock');
 
-    $this->RegisterTimer('INTERVAL', $this->ReadPropertyInteger('ScanInterval'), 'BTP_Scan($id)');
-  }
-
-  protected function RegisterTimer($ident, $interval, $script) {
-    $id = @IPS_GetObjectIDByIdent($ident, $this->InstanceID);
-
-    if ($id && IPS_GetEvent($id)['EventType'] <> 1) {
-      IPS_DeleteEvent($id);
-      $id = 0;
-    }
-
-    if (!$id) {
-      $id = IPS_CreateEvent(1);
-      IPS_SetParent($id, $this->InstanceID);
-      IPS_SetIdent($id, $ident);
-    }
-
-    IPS_SetName($id, $ident);
-    IPS_SetHidden($id, true);
-    IPS_SetEventScript($id, "\$id = \$_IPS['TARGET'];\n$script;");
-
-    if (!IPS_EventExists($id)) throw new Exception("Ident with name $ident is used for wrong object type");
-
-    if (!($interval > 0)) {
-      IPS_SetEventCyclic($id, 0, 0, 0, 0, 1, 1);
-      IPS_SetEventActive($id, false);
-    } else {
-      IPS_SetEventCyclic($id, 0, 0, 0, 0, 1, $interval);
-      IPS_SetEventActive($id, true);
-    }
+    $this->SetTimerInterval('Update', $this->ReadPropertyInteger('ScanInterval') * 1000);
   }
 
   /*
    * Sucht nach dem Bluetoothdevice
    */
   public function Scan() {
-    if(IPS_SemaphoreEnter('BTPScan', 5000)) {
-      $mac = $this->ReadPropertyString('Mac');
+    if(IPS_SemaphoreEnter('BTPScan', 6000)) {
+      $mac = strtoupper($this->ReadPropertyString('Mac'));
       if (preg_match('/^(?:[0-9A-F]{2}[:]?){6}$/i', $mac)) {
         $lastState = GetValueBoolean($this->GetIDForIdent('STATE'));
-        $search = trim(shell_exec("hcitool name $mac"));
-        $state = ($search != '');
+        if ($this->ReadPropertyBoolean('BluetoothLE')) {
+          $timeout = time() + 5;
+          $handle = popen("stdbuf -oL hcitool -i hci0 lescan", "r");
+          stream_set_blocking($handle, false);
+          $output = '';
+          $state = false;
+          do {
+            $output .= fread($handle, 1024);
+            if (strstr($output, $mac)) {
+              $state = true;
+              break;
+            }
+            usleep(250000);
+          } while (time() < $timeout);
+          shell_exec("pkill --signal SIGINT hcitool");
+          pclose($handle);
+        } else {
+          $search = trim(shell_exec("hcitool -i hci0 name $mac"));
+          $state = ($search != '');
+          if ($state) SetValueString($this->GetIDForIdent('NAME'), $search);
+        }
         SetValueBoolean($this->GetIDForIdent('STATE'), $state);
 
-        if ($state) SetValueString($this->GetIDForIdent('NAME'), $search);
         if ($lastState != $state) {
           if ($state) SetValueInteger($this->GetIDForIdent('PRESENT_SINCE'), time());
           if (!$state) SetValueInteger($this->GetIDForIdent('ABSENT_SINCE'), time());

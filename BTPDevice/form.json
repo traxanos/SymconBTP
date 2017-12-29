@@ -1,6 +1,7 @@
 {
   "elements": [
     { "name": "Mac", "type": "ValidationTextBox", "caption": "Mac" },
+    { "name": "BluetoothLE", "type": "CheckBox", "caption": "Bluetooth LE" },
     { "name": "ScanInterval", "type": "IntervalBox", "caption": "Sekunden" }
   ],
   "actions": [
