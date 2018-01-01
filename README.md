@@ -60,7 +60,7 @@ Es werden keine weiteren Profile benötigt.
 
 ### 6. WebFront
 
-Zeit des Zustand des Bluetoothgerät an.
+Zeigt den Zustand des Bluetoothgerät an.
 
 ### 7. PHP-Befehlsreferenz
 
