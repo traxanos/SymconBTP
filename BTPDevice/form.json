@@ -1,10 +1,23 @@
 {
-  "elements": [
-    { "name": "Mac", "type": "ValidationTextBox", "caption": "Mac" },
-    { "name": "BluetoothLE", "type": "CheckBox", "caption": "Bluetooth LE" },
-    { "name": "ScanInterval", "type": "IntervalBox", "caption": "Sekunden" }
+  "elements": [{
+      "name": "Mac",
+      "type": "ValidationTextBox",
+      "caption": "MAC-Adresse"
+    },
+    {
+      "name": "BluetoothLE",
+      "type": "CheckBox",
+      "caption": "Bluetooth LE"
+    },
+    {
+      "name": "ScanInterval",
+      "type": "IntervalBox",
+      "caption": "Sekunden"
+    }
   ],
-  "actions": [
-    { "type": "Button", "label": "Suchen", "onClick": "print_r(BTP_Scan($id));" }
-  ]
+  "actions": [{
+    "type": "Button",
+    "label": "Suchen",
+    "onClick": "print_r(BTP_Scan($id));"
+  }]
 }
